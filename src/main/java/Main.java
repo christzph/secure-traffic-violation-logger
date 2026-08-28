@@ -16,5 +16,7 @@ public class Main {
 
             DatabaseManager.salvarInfracao(inf);
         }
+
+        DatabaseManager.exibirRelatorioInfracoes();
     }
 }

@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseManager {
-    private static final String URL = "jdbc:sqlite:transito.db";
+    private static final String URL = "jdbc:sqlite:db/transito.db";
 
     public static Connection conectar() {
         try {
@@ -55,6 +55,35 @@ public class DatabaseManager {
 
         } catch (SQLException | NullPointerException e) {
             System.out.println("[ERRO SQL] Falha ao salvar infração: " + e.getMessage());
+        }
+    }
+
+    public static void exibirRelatorioInfracoes() {
+        String sql = "SELECT * FROM infracoes";
+
+        try (Connection conn = conectar();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             java.sql.ResultSet rs = pstmt.executeQuery()) {
+
+            System.out.println("\n--- RELATÓRIO OFICIAL DE INFRAÇÕES (BANCO DE DADOS) ---");
+            boolean temRegistros = false;
+
+            while (rs.next()) {
+                temRegistros = true;
+                System.out.printf("ID: %d | Placa: %s | Velocidade: %.1f km/h | Data: %s%n",
+                        rs.getInt("id"),
+                        rs.getString("placa"),
+                        rs.getDouble("velocidade"),
+                        rs.getString("data_hora"));
+            }
+
+            if (!temRegistros) {
+                System.out.println("Nenhuma infração registrada no sistema.");
+            }
+            System.out.println("-------------------------------------------------------");
+
+        } catch (SQLException | NullPointerException e) {
+            System.out.println("[ERRO SQL] Falha ao gerar relatório: " + e.getMessage());
         }
     }
 }
