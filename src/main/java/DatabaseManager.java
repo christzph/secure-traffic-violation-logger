@@ -1,5 +1,6 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -35,6 +36,25 @@ public class DatabaseManager {
             System.out.println("[ERRO SQL] Falha ao inicializar banco: " + e.getMessage());
         } catch (NullPointerException e) {
             System.out.println("[ERRO] Conexão com o banco falhou, abortando inicialização.");
+        }
+    }
+
+    public static void salvarInfracao(Infracao infracao) {
+        String sql = "INSERT INTO infracoes (placa, velocidade, limite, data_hora) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = conectar();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, infracao.getPlaca());
+            pstmt.setDouble(2, infracao.getVelocidadeRegistrada());
+            pstmt.setDouble(3, infracao.getLimiteVia());
+            pstmt.setString(4, infracao.getDataHoraString());
+
+            pstmt.executeUpdate();
+            System.out.println("[DB-SECURE] Infração da placa " + infracao.getPlaca() + " persistida com segurança (PreparedStatement).");
+
+        } catch (SQLException | NullPointerException e) {
+            System.out.println("[ERRO SQL] Falha ao salvar infração: " + e.getMessage());
         }
     }
 }
