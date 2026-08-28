@@ -8,8 +8,9 @@ public class DatabaseManager {
 
     public static Connection conectar() {
         try {
+            Class.forName("org.sqlite.JDBC");
             return DriverManager.getConnection(URL);
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             System.out.println("[ERRO DB] Falha ao conectar: " + e.getMessage());
             return null;
         }
@@ -32,6 +33,8 @@ public class DatabaseManager {
 
         } catch (SQLException e) {
             System.out.println("[ERRO SQL] Falha ao inicializar banco: " + e.getMessage());
+        } catch (NullPointerException e) {
+            System.out.println("[ERRO] Conexão com o banco falhou, abortando inicialização.");
         }
     }
 }
